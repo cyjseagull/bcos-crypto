@@ -1,0 +1,4 @@
+[submodule "bcos-framework"]
+    path = bcos-framework
+    url = https://github.com/cyjseagull/bcos-framework
+    branch = dev
