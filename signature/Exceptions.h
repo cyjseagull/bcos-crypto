@@ -13,34 +13,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * @brief Hash algorithm of sm3
- * @file SM3.h
- * @date 2021.03.04
+ * @brief define the exceptions for bcos-crypto
+ * @file Execptions.h
+ * @date 2021.03.05
  * @author yujiechen
  */
 #pragma once
-#include <WeDPRCrypto.h>
-#include <bcos-framework/interfaces/crypto/Hash.h>
+#include <bcos-framework/libutilities/Exceptions.h>
 
 namespace bcos
 {
 namespace crypto
 {
-h256 inline sm3Hash(bytesConstRef _data)
-{
-    auto cryptoResult = wedpr_sm3_hash_binary((const char*)_data.data(), _data.size());
-    auto hashResult =
-        h256(bytesConstRef(reinterpret_cast<const byte*>(cryptoResult.data), h256::size));
-    dealloc_hash_result(cryptoResult);
-    return hashResult;
-}
-class SM3 : public Hash
-{
-public:
-    using Ptr = std::shared_ptr<SM3>;
-    SM3() {}
-    virtual ~SM3() {}
-    h256 hash(bytesConstRef _data) override { return sm3Hash(_data); }
-};
+DERIVE_BCOS_EXCEPTION(PriToPublicKeyException);
+DERIVE_BCOS_EXCEPTION(SignatureException);
+DERIVE_BCOS_EXCEPTION(InvalidSignature);
+DERIVE_BCOS_EXCEPTION(InvalidPublicKey);
+DERIVE_BCOS_EXCEPTION(UnsupportedSignatureAlgorithm);
+DERIVE_BCOS_EXCEPTION(GenerateKeyPairException);
 }  // namespace crypto
 }  // namespace bcos

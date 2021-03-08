@@ -13,23 +13,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * @brief Hash algorithm of keccak256
- * @file Keccak256.cpp
+ * @brief implementation for SM2KeyPair
+ * @file SM2KeyPair.cpp
+ * @date 2021.03.10
+ * @author yujiechen
  */
-#include "Keccak256.h"
-#include "WeDPRCrypto.h"
+#include "SM2KeyPair.h"
+#include <bcos-crypto/hash/SM3.h>
+#include <bcos-crypto/signature/SignatureImpl.h>
 
 using namespace bcos;
 using namespace bcos::crypto;
-h256 bcos::crypto::keccak256Hash(bytesConstRef _data)
+
+Address bcos::crypto::sm2ToAddress(Public const& _pubKey)
 {
-    auto cryptoResult = wedpr_keccak256_hash_binary((const char*)_data.data(), _data.size());
-    auto hashResult =
-        h256(bytesConstRef(reinterpret_cast<const byte*>(cryptoResult.data), h256::size));
-    dealloc_hash_result(cryptoResult);
-    return hashResult;
+    return right160(sm3Hash(_pubKey.ref()));
 }
-h256 Keccak256::hash(bytesConstRef _data)
+Public bcos::crypto::sm2PriToPub(Secret const& _secretKey)
 {
-    return keccak256Hash(_data);
+    return priToPub(SignatureOption::SM2, _secretKey);
+}
+Address bcos::crypto::sm2ToAddress(Secret const& _secretKey)
+{
+    return sm2ToAddress(sm2PriToPub(_secretKey));
 }

@@ -13,34 +13,29 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * @brief Hash algorithm of sm3
- * @file SM3.h
- * @date 2021.03.04
+ * @brief signature implementation
+ * @file SignatureImpl.h
+ * @date 2021.03.05
  * @author yujiechen
  */
 #pragma once
-#include <WeDPRCrypto.h>
-#include <bcos-framework/interfaces/crypto/Hash.h>
+#include <bcos-framework/interfaces/crypto/Signature.h>
 
 namespace bcos
 {
 namespace crypto
 {
-h256 inline sm3Hash(bytesConstRef _data)
+enum class SignatureOption : uint16_t
 {
-    auto cryptoResult = wedpr_sm3_hash_binary((const char*)_data.data(), _data.size());
-    auto hashResult =
-        h256(bytesConstRef(reinterpret_cast<const byte*>(cryptoResult.data), h256::size));
-    dealloc_hash_result(cryptoResult);
-    return hashResult;
-}
-class SM3 : public Hash
-{
-public:
-    using Ptr = std::shared_ptr<SM3>;
-    SM3() {}
-    virtual ~SM3() {}
-    h256 hash(bytesConstRef _data) override { return sm3Hash(_data); }
+    SECP256K1 = 0,
+    SM2 = 1,
 };
+
+Public priToPub(SignatureOption _signatureOption, Secret const& _secret);
+std::shared_ptr<bytes> sign(
+    SignatureOption _signatureOption, KeyPair const& _keyPair, const h256& _hash);
+bool verify(SignatureOption _signatureOption, Public const& _pubKey, const h256& _hash,
+    bytesConstRef _signatureData);
+std::shared_ptr<KeyPair> generateKeyPair(SignatureOption _signatureOption);
 }  // namespace crypto
 }  // namespace bcos

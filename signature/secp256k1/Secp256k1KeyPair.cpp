@@ -13,27 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  *
- * @brief Hash algorithm of keccak256
- * @file Keccak256.h
- * @date 2021.03.04
+ * @brief implementation for secp256k1 KeyPair
+ * @file Secp256k1KeyPair.cpp
+ * @date 2021.03.05
  * @author yujiechen
  */
-#pragma once
-#include "WeDPRCrypto.h"
-#include <bcos-framework/interfaces/crypto/Hash.h>
+#include "Secp256k1KeyPair.h"
+#include "hash/Keccak256.h"
+#include <bcos-crypto/signature/SignatureImpl.h>
 
-namespace bcos
+bcos::crypto::Public bcos::crypto::secp256k1PriToPub(bcos::crypto::Secret const& _secret)
 {
-namespace crypto
+    return bcos::crypto::priToPub(bcos::crypto::SignatureOption::SECP256K1, _secret);
+}
+
+bcos::Address bcos::crypto::secp256k1ToAddress(bcos::crypto::Public const& _pubKey)
 {
-class Keccak256 : public Hash
+    return right160(keccak256Hash(_pubKey.ref()));
+}
+
+std::shared_ptr<bcos::crypto::KeyPair> bcos::crypto::generateSecp256k1KeyPair()
 {
-public:
-    using Ptr = std::shared_ptr<Keccak256>;
-    Keccak256() {}
-    virtual ~Keccak256() {}
-    h256 hash(bytesConstRef _data) override;
-};
-h256 keccak256Hash(bytesConstRef _data);
-}  // namespace crypto
-}  // namespace bcos
+    return bcos::crypto::generateKeyPair(SignatureOption::SECP256K1);
+}
